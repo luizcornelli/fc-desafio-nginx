@@ -1,0 +1,39 @@
+version: '3.5'
+services:
+  nginx:
+    build:
+      context: ./nginx
+    container_name: nginx-container
+    restart: always
+    ports: 
+      - '8080:80'
+    depends_on:
+      - node
+    networks:
+      - default-network
+
+  mysql:
+    build: "./mysql"
+    container_name: mysql-container
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=desafio-fullcycle-db
+    volumes:
+      - ./backend/database/data:/var/lib/mysql
+    restart: always
+    networks:
+      - default-network
+
+  node:
+    container_name: node-container
+    restart: always
+    build:
+      context: ./node
+    depends_on:
+      - mysql
+    networks:
+      - default-network
+
+networks:
+  default-network:
+    driver: bridge
